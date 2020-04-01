@@ -2,6 +2,7 @@
 
 import tkinter as tk
 from tkinter import ttk
+from time import sleep
 #setting up window
 root = tk.Tk()
 main = ttk.Frame(root)
@@ -16,7 +17,8 @@ NUM_COLUMNS = 4
 Display_Num = tk.StringVar()
 Display_Num.set('0')
 stored_num = 0
-Equation = [0,'+',0]
+opClicked = False
+Equation = [0,'',None]
 
 
 
@@ -38,14 +40,21 @@ for j in range(NUM_ROWS):
 
 
 def clear():
-    global stored_num
+    global stored_num, Equation, opClicked
+    opClicked = False
     Display_Num.set('0')
-    stored_num = 0
-    clear_but_text.set('AC')
     root.update()
+    if clear_but_text.get()=='AC':
+        stored_num = 0
+        Equation = [0,'',None]
+    else:
+        clear_but_text.set('AC')
+        root.update()
 
 def negate():
-    global stored_num
+    global stored_num, opClicked
+    opClicked = False
+    stored_num = eval(Display_Num.get())
     if stored_num==0:
         return
     elif stored_num>0:
@@ -58,41 +67,52 @@ def negate():
         
 
 def point():
-    global stored_num
-    if Display_Num.get().find('.')==-1:
+    global stored_num, opClicked
+    if opClicked:
+        Display_Num.set('0.')
+        stored_num = 0.0
+    elif Display_Num.get().find('.')==-1:
         Display_Num.set(Display_Num.get()+'.')
         stored_num = float(stored_num)
+    opClicked = False
 
 def percent():
-    global stored_num
-    stored_num*=100
-    Display_Num.set(str(stored_num))
+    global stored_num, Equation, opClicked
+    opClicked = False
+    Equation = [Display_Num.get(),'/',100]
+    stored_num = 100
+    equals()
+
 
 def NumberPressed(number):
-    global stored_num
-    if Display_Num.get() == '0' or Display_Num.get()=="Error":
+    global stored_num, opClicked
+    if opClicked or Display_Num.get() == '0' or Display_Num.get()=="Error":
         Display_Num.set(str(number))
         root.update()
         clear_but_text.set('C')
-        stored_num = int(number)
+        stored_num = eval(number)
     else:
         Display_Num.set(Display_Num.get()+str(number))
         root.update()
         new_num = Display_Num.get()
-        if new_num.find('.')==-1:
-            stored_num=int(new_num)
-        else:
-            stored_num=float(new_num)
+        stored_num=eval(new_num)
+    opClicked = False
 
 
 
 def operation(opChar):
-    global Equation, stored_num
-    Display_Num.set('0')
+    global Equation, stored_num, opClicked
+    opClicked =True
+    temp = Display_Num.get()
+    Display_Num.set('')
     root.update()
-    Equation[0] = stored_num
-    Equation[1] = opChar
-    stored_num = 0
+    sleep(0.05)
+    Display_Num.set(temp)
+    root.update()
+    if Equation[0]==0:
+        Equation[0]=stored_num
+        stored_num = 0
+    Equation[1]=opChar
 
 def add():
     operation('+')
@@ -109,17 +129,19 @@ def divide():
  
 def equals():
     global Equation, stored_num
+    if Equation[1]=='':
+        return
     Equation[2] = stored_num
     EqString = f'{Equation[0]}{Equation[1]}{Equation[2]}'
+    print(EqString)
     try:
         result = eval(EqString)
         Equation[0] = result
-        stored_num = result
         Display_Num.set(str(result))
     except:
         Display_Num.set("Error")
         root.update()
-        Equation = [0,'+',0]
+        Equation = [0,'',0]
         stored_num = 0
 
     
@@ -161,7 +183,7 @@ ttk.Button(main,text='=',style="Num.TButton",command=equals).grid(row=5,column=l
 
 
 
-root.geometry("240x320+20+20")
+root.geometry("240x320+1100+200")
 root.minsize(240,320)
 root.title("My Calculator")
 root.mainloop()
