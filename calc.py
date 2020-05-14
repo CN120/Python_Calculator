@@ -22,12 +22,6 @@ Equation = [0,'',None]
 
 
 
-
-
-
-
-
-
 #window configuration
 ttk.Style().configure("Num.TButton", font = ('Calibri',14, 'normal'))  
 ttk.Style().configure("Bold.TLabel",font = ('Calibri',15, 'bold'))  #Highligting Active Record Number
@@ -36,7 +30,6 @@ for i in range(3):
 main.grid_columnconfigure(3,weight=1)
 for j in range(NUM_ROWS):
     main.grid_rowconfigure(j,weight=1)
-
 
 
 def clear():
@@ -102,7 +95,7 @@ def NumberPressed(number):
 
 def operation(opChar):
     global Equation, stored_num, opClicked
-    opClicked =True
+    opClicked = True
     temp = Display_Num.get()
     Display_Num.set('')
     root.update()
@@ -149,8 +142,6 @@ def equals():
 
 #Widget creation
 ttk.Label(main,textvariable=Display_Num,style="Bold.TLabel").grid(row=0,column=0,columnspan=4,padx=10, sticky='E')
-
-# B_Text = (None,('AC', '+/-','%','÷'), ('7','8','9','x'),('4','5','6','−'),('1','2','3','+'),('0','0','.','='))
 
 
 lcn = 0 #lcn = left column number
